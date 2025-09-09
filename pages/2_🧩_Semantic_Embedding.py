@@ -5,7 +5,7 @@ import streamlit as st
 
 
 st.info(
-    "This visualization shows the **semantic embeddings of nouns** extracted from your data. \n\n"
+    "This visualization shows the **semantic embeddings of nouns** extracted from the data. \n\n"
     "- Each point represents a noun.\n"
     "- 🔍 Zoom in and out to explore details at different scales.\n"
     "- 🎨 Color the points by **article, suffix, prefix**, or other features.\n"
