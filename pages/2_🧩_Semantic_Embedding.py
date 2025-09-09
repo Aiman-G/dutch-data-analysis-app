@@ -11,7 +11,7 @@ st.info(
     "- 🎨 Color the points by **article, suffix, prefix**, or other features.\n"
     "- 📰 See which articles dominate within different semantic topics.\n"
     "- ◻️ Use the **Select (dashed square) tool** to highlight points and view details about them in the bar plots or additional charts.\n\n"
-    "This visualization tool was released just a few days ago by **Apple** — many thanks to them!",icon="ℹ️"
+    ,icon="ℹ️"
 )
 
 
