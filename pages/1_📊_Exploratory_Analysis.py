@@ -181,7 +181,7 @@ with length_tab:
 # --- Word Spotlight ---
 with spotlight_tab:
     st.subheader("Word Spotlight")
-    word = st.text_input("Enter a word to spotlight")
+    word = st.text_input("Enter a word to see its similar meaning words(Semantic similarity)")
     k_neighbors = st.slider("Number of Nearest Neighbors", 1, 20, 5)
     if word in filtered_df["lemma"].values:
         row = filtered_df[filtered_df["lemma"] == word].iloc[0]

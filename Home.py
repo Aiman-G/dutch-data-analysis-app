@@ -45,16 +45,16 @@ with st.expander("**For Whom?**"):
     I believe those whose dutch is better than 1/2 A1 level ( my current level) 
                 they would benefit more.***""")
 
-with st.expander("**About Data**"):
-    st.markdown(
-        "- 📥 The data was obtained from **Hugging Face**: `mc4-nl-cleaned-mircor`.\n"
-        "- 🔎 **5,000 rows** were randomly selected and downloaded.\n"
-        "- 🧩 Nouns and articles were extracted using **spaCy** (`nl_core_news_md` model).\n"
-        "- ⚡ Semantic embeddings were locally computed with a **FastText** model (`cc.nl.300.bin`).\n"
-        "- 🗺️ Embeddings were projected into **2D** using the **UMAP** algorithm.\n"
-        "- 📖 The data (all extracted features) is based on the **lemma** of each noun, meaning the base dictionary form.\n"
-        "   (e.g., *honden* → **hond**, *huisje* → **huis**)."
-    )
+# with st.expander("**About Data**"):
+#     st.markdown(
+#         "- 📥 The data was obtained from **Hugging Face**: `mc4-nl-cleaned-mircor`.\n"
+#         "- 🔎 **5,000 rows** were randomly selected and downloaded.\n"
+#         "- 🧩 Nouns and articles were extracted using **spaCy** (`nl_core_news_md` model).\n"
+#         "- ⚡ Semantic embeddings were locally computed with a **FastText** model (`cc.nl.300.bin`).\n"
+#         "- 🗺️ Embeddings were projected into **2D** using the **UMAP** algorithm.\n"
+#         "- 📖 The data (all extracted features) is based on the **lemma** of each noun, meaning the base dictionary form.\n"
+#         "   (e.g., *honden* → **hond**, *huisje* → **huis**)."
+#     )
 
 
 
