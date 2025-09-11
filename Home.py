@@ -26,7 +26,16 @@ def big_text(text: str):
 
 
 with st.expander("**What is this app about?**", expanded=True):
-    st.markdown("***This project started as a way to explore and model data related to the Dutch language.***")
+    st.markdown("""
+    🌍 **Learning a language shouldn’t feel like memorizing endless rules.**  
+    Instead of reading grammar books cover to cover, why not let **data analysis** 
+    and **artificial intelligence (AI)** reveal the hidden patterns for us?  
+
+    This project reimagines how we explore and learn Dutch.  
+    By combining **linguistics** with **modern AI techniques**, the app makes the 
+    structure of Dutch nouns **interactive, visual, and fun** to explore.  
+    """)
+
 
 
 with st.expander("**Why**?", expanded=True):
