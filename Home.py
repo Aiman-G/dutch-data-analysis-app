@@ -33,7 +33,7 @@ with st.expander("**What is this app about?**", expanded=True):
 
     This project reimagines how we explore and learn Dutch.  
     By combining **linguistics** with **modern AI techniques**, the app makes the 
-    structure of Dutch nouns **interactive, visual, and fun** to explore.  
+    structure of Dutch  **interactive, visual, and fun** to explore.  
     """)
 
 
