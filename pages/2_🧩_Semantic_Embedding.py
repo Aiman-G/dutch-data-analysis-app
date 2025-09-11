@@ -53,7 +53,7 @@ with tab2:
            - Word suffix  
            - Word prefix  
         4. **Zoom and Pan** to explore details at different scales.  
-        5. **Select a cluster** using the **dashed square tool** to see more details in charts and tables.  
+        5. **Select a cluster** using the **dashed square tool** to see more details in charts and the table.  
 
         ---
         """
