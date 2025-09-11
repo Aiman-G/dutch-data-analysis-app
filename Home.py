@@ -38,7 +38,7 @@ with st.expander("**What is this app about?**", expanded=True):
 
 
 
-with st.expander("**Why**?", expanded=True):
+with st.expander("**Why**?", expanded=False):
     st.markdown(""" ***A month ago I began studying Dutch. Very quickly I felt overwhelmed by
             all the exceptions in the rules—especially with the articles het and de. 
            It seemed to me that the exception is the rule. So I thought:
