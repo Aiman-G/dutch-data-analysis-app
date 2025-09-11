@@ -1,13 +1,14 @@
 import streamlit as st
 
 st.set_page_config(
-   page_title="Dutch Nouns Explorer – AI-powered Learning",
-    page_icon="🇳🇱",
-    layout="wide",
+   page_title="Dutch Language Explorer – AI-powered Learning",
+   page_icon="🇳🇱",
+   layout="wide",
 )
 
-st.title("🇳🇱 Dutch Data Analysis – AI-powered Learning")
-st.caption("Exploring Dutch language data interactively")
+st.title("🇳🇱 Dutch Language Explorer – AI-powered Learning")
+st.caption("Discovering Dutch through data, AI, and interactive exploration")
+
 
 # --- CSS styling ---
 st.markdown("""
@@ -25,34 +26,61 @@ def big_text(text: str):
 
 
 
+# with st.expander("**What is this app about?**", expanded=True):
+#     st.markdown("""
+#     🌍 **Learning a language shouldn’t feel like memorizing endless rules.**  
+#     Instead of reading grammar books cover to cover, why not let **data analysis** 
+#     and **artificial intelligence (AI)** reveal the hidden patterns for us?  
+
+#     This project reimagines how we explore and learn Dutch.  
+#     By combining **linguistics** with **modern AI techniques**, the app makes the 
+#     structure of Dutch  **interactive, visual, and fun** to explore.  
+#     """)
 with st.expander("**What is this app about?**", expanded=True):
     st.markdown("""
-    🌍 **Learning a language shouldn’t feel like memorizing endless rules.**  
-    Instead of reading grammar books cover to cover, why not let **data analysis** 
-    and **artificial intelligence (AI)** reveal the hidden patterns for us?  
+    🌍 **Learning Dutch shouldn’t just mean memorizing endless rules.**  
+    Instead, we can use **data analysis** and **artificial intelligence (AI)** to reveal 
+    the hidden structure of the language.  
 
-    This project reimagines how we explore and learn Dutch.  
-    By combining **linguistics** with **modern AI techniques**, the app makes the 
-    structure of Dutch  **interactive, visual, and fun** to explore.  
+    This project reimagines how we **learn and teach Dutch** by turning language data 
+    into **interactive visualizations**.  
+    - For now, the focus is on **nouns and articles (de/het)**.  
+    - Soon, it will expand to cover **verbs, conjugations, and more**.  
+
+    The goal: to make Dutch grammar **intuitive, visual, and data-driven**.
     """)
 
 
 
-with st.expander("**Why**?", expanded=False):
-    st.markdown(""" ***A month ago I began studying Dutch. Very quickly I felt overwhelmed by
-            all the exceptions in the rules—especially with the articles het and de. 
-           It seemed to me that the exception is the rule. So I thought:
-          why not use data to uncover patterns myself? Maybe I could find shortcuts or
-        at least a clearer picture. When I studied Mandarin Chinese in the past, grammar was simple,
-        but tones drove me mad. 
-           I tried a similar approach with the Mandarin Chinese tones. 
-           Now I’m doing the same for Dutch. Hopefully it won’t just help me, 
-           but also anyone else learning the language. Sharing is multiplying.***"""
-           )
+
+with st.expander("**Why?**", expanded=True):
+    st.markdown("""
+    ✨ **The personal spark:**  
+    When I started learning Dutch ( a month ago), I was quickly overwhelmed by all the so-called "exceptions"—especially with the articles **de** and **het**.  
+    It felt like the exception *was* the rule.  
+
+    Instead of giving up, I thought:  
+    💡 *What if I used data to uncover patterns myself?*  
+
+    I had already experimented with this idea while learning **Mandarin Chinese**:  
+    - In Chinese, grammar was simple but **tones** drove me mad.  
+    - I used data to look for structure, which helped me learn more efficiently.  
+
+    Now, I’m applying the same idea to Dutch.  
+    Hopefully, this project helps not only me—but anyone curious about 
+    learning Dutch in a smarter, data-driven way.  
+    """)
+
 with st.expander("**For Whom?**"):
-    st.markdown("""***For anyone who learn or teach Dutch. In fact,
-    I believe those whose dutch is better than 1/2 A1 level ( my current level) 
-                they would benefit more.***""")
+    st.markdown("""
+    👩‍🎓 **This app is for anyone learning or teaching Dutch.**  
+
+    - Beginners can **see patterns** that make learning less overwhelming.  
+    - Intermediate/advanced learners can **analyze grammar structures** in depth.  
+    - Teachers can use it as an **interactive classroom aid**.  
+    - Linguists and AI enthusiasts can explore **language data** in a new, visual format.  
+    """)
+
 
 with st.expander("**Methodology**"):
     st.markdown( "The **nouns' data**:\n"
@@ -68,5 +96,7 @@ with st.expander("**Methodology**"):
 
 
 with st.expander("**Contact**"):
-    st.markdown("""***In case you saw something interesting in the data, or you have a suggestion, 
-                you can drop me an email at: aymen.omg@gmail.com.***""")
+    st.markdown("""
+    💌 Found something interesting in the data? Have a suggestion?  
+    I’d love to hear from you → **aymen.omg@gmail.com**  
+    """)
