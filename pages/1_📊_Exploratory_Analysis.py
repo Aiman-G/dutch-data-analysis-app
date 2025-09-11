@@ -183,22 +183,27 @@ with spotlight_tab:
     st.subheader("Word Spotlight")
     word = st.text_input("Enter a word to see its similar meaning words(Semantic similarity)")
     k_neighbors = st.slider("Number of Nearest Neighbors", 1, 20, 5)
-    if word in filtered_df["lemma"].values:
-        row = filtered_df[filtered_df["lemma"] == word].iloc[0]
-        st.write("**Lemma:**", row["lemma"])
-        st.write("**Article:**", row["article"])
-        st.write("**Length:**", row["length"])
-        st.write("**Prefix-3:**", row["prefix_3"])
-        st.write("**Suffix-3:**", row["suffix_3"])
 
-        # Compute neighbors by Euclidean distance in projection space
-        distances = ((filtered_df["projection_x"] - row["projection_x"])**2 + (filtered_df["projection_y"] - row["projection_y"])**2)**0.5
-        neighbors = filtered_df.assign(distance=distances).sort_values("distance").iloc[1:k_neighbors+1]
+    if word:  # Only proceed if the user typed something
+        word_lower = word.lower()  # Convert input to lowercase
 
-        st.write("### Nearest Neighbors")
-        st.dataframe(neighbors[["lemma", "article", "length", "distance"]])
-    elif word:
-        st.warning("Word not found in current filter.")
+        if word_lower in filtered_df["lemma"].values:
+            row = filtered_df[filtered_df["lemma"] == word_lower].iloc[0]
+            st.write("**Lemma:**", row["lemma"])
+            st.write("**Article:**", row["article"])
+            st.write("**Length:**", row["length"])
+            st.write("**Prefix-3:**", row["prefix_3"])
+            st.write("**Suffix-3:**", row["suffix_3"])
+
+            # Compute neighbors by Euclidean distance in projection space
+            distances = ((filtered_df["projection_x"] - row["projection_x"])**2 + (filtered_df["projection_y"] - row["projection_y"])**2)**0.5
+            neighbors = filtered_df.assign(distance=distances).sort_values("distance").iloc[1:k_neighbors+1]
+
+            st.write("### Nearest Neighbors")
+            st.dataframe(neighbors[["lemma", "article", "length", "distance"]])
+        else:
+            st.warning("Word not found in current filter.")
+
 
 # --- Density View ---
 # with density_tab:
