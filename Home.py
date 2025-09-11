@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Dutch Data Analysis",
+   page_title="Dutch Nouns Explorer – AI-powered Learning",
     page_icon="🇳🇱",
     layout="wide",
 )
