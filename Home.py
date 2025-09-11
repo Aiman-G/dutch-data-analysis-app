@@ -101,8 +101,8 @@ with st.expander("**Contact**"):
     I’d love to hear from you → **aymen.omg@gmail.com**  
     """)
 
-    with st.expander("**☕ Support the Project**"):
-        st.markdown("""
+with st.expander("**☕ Support the Project**"):
+    st.markdown("""
         🚀 **This app is just the beginning.**  
         Right now, it focuses on Dutch nouns and articles, but the vision is much bigger:  
         - Adding **verbs, conjugations, and irregular patterns**  
