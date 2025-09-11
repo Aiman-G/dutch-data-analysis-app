@@ -6,7 +6,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("🇳🇱 Dutch Data Analysis")
+st.title("🇳🇱 Dutch Data Analysis – AI-powered Learning")
 st.caption("Exploring Dutch language data interactively")
 
 # --- CSS styling ---
