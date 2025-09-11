@@ -36,7 +36,7 @@ def big_text(text: str):
 #     By combining **linguistics** with **modern AI techniques**, the app makes the 
 #     structure of Dutch  **interactive, visual, and fun** to explore.  
 #     """)
-with st.expander("**What is this app about?**", expanded=True):
+with st.expander("**What is this app about?**", expanded=False):
     st.markdown("""
     🌍 **Learning Dutch shouldn’t just mean memorizing endless rules.**  
     Instead, we can use **data analysis** and **artificial intelligence (AI)** to reveal 
@@ -53,7 +53,7 @@ with st.expander("**What is this app about?**", expanded=True):
 
 
 
-with st.expander("**Why?**", expanded=True):
+with st.expander("**Why?**", expanded=False):
     st.markdown("""
     ✨ **The personal spark:**  
     When I started learning Dutch ( a month ago), I was quickly overwhelmed by all the so-called "exceptions"—especially with the articles **de** and **het**.  
@@ -71,7 +71,7 @@ with st.expander("**Why?**", expanded=True):
     learning Dutch in a smarter, data-driven way.  
     """)
 
-with st.expander("**For Whom?**", expanded=True):
+with st.expander("**For Whom?**", expanded=False):
     st.markdown("""
     👩‍🎓 **This app is for anyone learning or teaching Dutch.**  
 
