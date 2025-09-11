@@ -71,7 +71,7 @@ with st.expander("**Why?**", expanded=True):
     learning Dutch in a smarter, data-driven way.  
     """)
 
-with st.expander("**For Whom?**"):
+with st.expander("**For Whom?**", expanded=True):
     st.markdown("""
     👩‍🎓 **This app is for anyone learning or teaching Dutch.**  
 
