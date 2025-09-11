@@ -100,3 +100,25 @@ with st.expander("**Contact**"):
     💌 Found something interesting in the data? Have a suggestion?  
     I’d love to hear from you → **aymen.omg@gmail.com**  
     """)
+
+    with st.expander("**☕ Support the Project**"):
+        st.markdown("""
+    🚀 **This app is just the beginning.**  
+    Right now, it focuses on Dutch nouns and articles, but the vision is much bigger:  
+    - Adding **verbs, conjugations, and irregular patterns**  
+    - Expanding the dataset for more accurate insights  
+    - Building richer **interactive visualizations** for learners and teachers  
+
+    To make that possible, I need to cover **compute resources, hosting, and development time**.  
+    Streamlit’s free tier is limited, and running AI models costs resources.  
+
+    If you find this project useful and want to see it grow, you can support in two ways:  
+
+    - 💡 **Share ideas or feedback** → Every suggestion helps improve the tool, data, or review the data.  
+    - ☕ **Buy me a coffee** → A small donation helps cover compute + hosting costs.  
+
+    👉 [Buy me a coffee](https://buymeacoffee.com/selenophil)  
+
+    Thank you. Every bit of support helps keep this project alive and evolving.  
+    """)
+
