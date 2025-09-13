@@ -56,11 +56,11 @@ min_samples_leaf = st.sidebar.slider("min_samples_leaf", 1, 50, 3)
 random_state = st.sidebar.number_input("random_state (seed)", 0, 99999, 42)
 test_size = st.sidebar.slider("Test set fraction (%)", 5, 50, 20) / 100.0
 
-fit_button = st.sidebar.button("🔄 Fit model", type="primary")
+fit_button = st.sidebar.button("🔄 Fit model", type="primary", width="stretch")
 
 # --- 4. Train & Evaluate ---
 if fit_button:
-    with st.spinner("Training decision tree..."):
+    with st.spinner("***Training decision tree...***", show_time=True):
         # Perform one-hot encoding on the user-selected features
         X = pd.get_dummies(df[selected_features].astype(str), drop_first=True)
         y = df[label_col].astype(str)
