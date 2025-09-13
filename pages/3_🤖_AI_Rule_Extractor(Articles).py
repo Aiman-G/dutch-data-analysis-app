@@ -192,5 +192,5 @@ if "clf" in st.session_state:
 
         st.download_button("📥 Download rules (CSV)", data=csv_buf.getvalue(),
                            file_name="rules.csv", mime="text/csv")
-        st.download_button("📄 Download rules & tree (PDF)", data=pdf_buf.getvalue(),
-                           file_name="rules_and_tree.pdf", mime="application/pdf")
+        # st.download_button("📄 Download rules & tree (PDF)", data=pdf_buf.getvalue(),
+        #                    file_name="rules_and_tree.pdf", mime="application/pdf")
