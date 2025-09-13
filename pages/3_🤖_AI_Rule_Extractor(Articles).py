@@ -190,7 +190,7 @@ if "clf_results" in st.session_state:
             # Limit the number of rules shown to save memory
             max_rules_to_show = 5
             for i, row in rules_display.head(max_rules_to_show).iterrows():
-                st.markdown(f"**Rule #{i+1}**: Predicts **{row['predicted_class']}** ({row['predicted_pct']:.1%}) "
+                st.markdown(f"**Rule #{i}**: Predicts **{row['predicted_class']}** ({row['predicted_pct']:.1%}) "
                             f"with a data coverage of {row['support_pct']:.1%}")
                 
                 fig_r, axr = plt.subplots(figsize=(6, 1.2))
