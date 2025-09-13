@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
-from reportlab.lib.utils import ImageReader
+#from reportlab.lib.pagesizes import letter
+#from reportlab.pdfgen import canvas
+#from reportlab.lib.utils import ImageReader
 import io
 import re
 from collections import defaultdict
