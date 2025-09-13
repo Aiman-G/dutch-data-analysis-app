@@ -175,7 +175,7 @@ def merge_rules(rules_df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(merged)
 
 
-def make_pdf(rules_df: pd.DataFrame, tree_img_buf: io.BytesIO) -> io.BytesIO:
+# def make_pdf(rules_df: pd.DataFrame, tree_img_buf: io.BytesIO) -> io.BytesIO:
     """
     Create a PDF report with extracted rules and decision tree image.
     """
