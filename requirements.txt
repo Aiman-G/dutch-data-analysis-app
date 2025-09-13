@@ -1,4 +1,5 @@
 
+
 streamlit
 plotly
 embedding-atlas
@@ -6,4 +7,3 @@ pandas
 numpy
 matplotlib
 scikit-learn
-reportlab
