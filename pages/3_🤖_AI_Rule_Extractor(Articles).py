@@ -188,7 +188,7 @@ if "clf" in st.session_state:
         csv_buf = io.BytesIO()
         rules_display.to_csv(csv_buf, index=False)
         csv_buf.seek(0)
-        pdf_buf = make_pdf(rules_display, buf_tree_img)
+        #pdf_buf = make_pdf(rules_display, buf_tree_img)
 
         st.download_button("📥 Download rules (CSV)", data=csv_buf.getvalue(),
                            file_name="rules.csv", mime="text/csv")
