@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 
 from utils.data_loader import load_data_noun_embeddings
 from utils.features import add_basic_features
-from utils.rules import tree_rules_to_dataframe, make_rules_human, make_pdf, merge_rules
+from utils.rules import tree_rules_to_dataframe, make_rules_human, merge_rules
 from utils.data_loader import load_data_noun_embeddings
 
 st.set_page_config(page_title="Dutch article rule extractor", layout="wide")
