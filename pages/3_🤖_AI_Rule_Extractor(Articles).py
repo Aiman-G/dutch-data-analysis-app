@@ -184,13 +184,13 @@ if "clf" in st.session_state:
             plt.tight_layout()
             st.pyplot(fig_r)
         # ---- export ----
-        st.subheader("Export rules & tree")
-        csv_buf = io.BytesIO()
-        rules_display.to_csv(csv_buf, index=False)
-        csv_buf.seek(0)
-        #pdf_buf = make_pdf(rules_display, buf_tree_img)
+        # st.subheader("Export rules & tree")
+        # csv_buf = io.BytesIO()
+        # rules_display.to_csv(csv_buf, index=False)
+        # csv_buf.seek(0)
+        # #pdf_buf = make_pdf(rules_display, buf_tree_img)
 
-        st.download_button("📥 Download rules (CSV)", data=csv_buf.getvalue(),
-                           file_name="rules.csv", mime="text/csv")
+        # st.download_button("📥 Download rules (CSV)", data=csv_buf.getvalue(),
+        #                    file_name="rules.csv", mime="text/csv")
         # st.download_button("📄 Download rules & tree (PDF)", data=pdf_buf.getvalue(),
         #                    file_name="rules_and_tree.pdf", mime="application/pdf")
