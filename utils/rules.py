@@ -175,56 +175,56 @@ def merge_rules(rules_df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(merged)
 
 
-# def make_pdf(rules_df: pd.DataFrame, tree_img_buf: io.BytesIO) -> io.BytesIO:
-    """
-    Create a PDF report with extracted rules and decision tree image.
-    """
-    buf = io.BytesIO()
-    c = canvas.Canvas(buf, pagesize=letter)
-    width, height = letter
-    margin = 40
-    y = height - margin
+#  def make_pdf(rules_df: pd.DataFrame, tree_img_buf: io.BytesIO) -> io.BytesIO:
+#     """
+#     Create a PDF report with extracted rules and decision tree image.
+#     """
+#     buf = io.BytesIO()
+#     c = canvas.Canvas(buf, pagesize=letter)
+#     width, height = letter
+#     margin = 40
+#     y = height - margin
 
-    c.setFont("Helvetica-Bold", 14)
-    c.drawString(margin, y, "Dutch Article Rule Extractor — Rules Export")
-    c.setFont("Helvetica", 9)
-    y -= 18
-    c.drawString(margin, y, f"Generated: {datetime.utcnow().isoformat()} UTC")
-    y -= 20
+#     c.setFont("Helvetica-Bold", 14)
+#     c.drawString(margin, y, "Dutch Article Rule Extractor — Rules Export")
+#     c.setFont("Helvetica", 9)
+#     y -= 18
+#     c.drawString(margin, y, f"Generated: {datetime.utcnow().isoformat()} UTC")
+#     y -= 20
 
-    # Top rules
-    topn = min(20, len(rules_df))
-    c.setFont("Helvetica-Bold", 11)
-    c.drawString(margin, y, f"Top {topn} rules (by support):")
-    y -= 16
-    c.setFont("Helvetica", 9)
+#     # Top rules
+#     topn = min(20, len(rules_df))
+#     c.setFont("Helvetica-Bold", 11)
+#     c.drawString(margin, y, f"Top {topn} rules (by support):")
+#     y -= 16
+#     c.setFont("Helvetica", 9)
 
-    for i in range(topn):
-        if y < 120:
-            c.showPage()
-            y = height - margin
-        row = rules_df.iloc[i]
-        line = f"{i+1}. [{row['n_support']} obs, {row['support_pct']:.1%}] → {row['predicted_class']} ({row['predicted_pct']:.1%}) :: {row['rule']}"
-        while len(line) > 120:
-            c.drawString(margin, y, line[:120])
-            y -= 12
-            line = line[120:]
-        c.drawString(margin, y, line)
-        y -= 12
+#     for i in range(topn):
+#         if y < 120:
+#             c.showPage()
+#             y = height - margin
+#         row = rules_df.iloc[i]
+#         line = f"{i+1}. [{row['n_support']} obs, {row['support_pct']:.1%}] → {row['predicted_class']} ({row['predicted_pct']:.1%}) :: {row['rule']}"
+#         while len(line) > 120:
+#             c.drawString(margin, y, line[:120])
+#             y -= 12
+#             line = line[120:]
+#         c.drawString(margin, y, line)
+#         y -= 12
 
-    # Add tree image
-    c.showPage()
-    tree_img_buf.seek(0)
-    img = ImageReader(tree_img_buf)
-    img_w, img_h = img.getSize()
-    aspect = img_h / img_w
-    target_w = width - 2*margin
-    target_h = target_w * aspect
-    if target_h > height - 2*margin:
-        target_h = height - 2*margin
-        target_w = target_h / aspect
-    c.drawImage(img, margin, height - margin - target_h, width=target_w, height=target_h)
+#     # Add tree image
+#     c.showPage()
+#     tree_img_buf.seek(0)
+#     img = ImageReader(tree_img_buf)
+#     img_w, img_h = img.getSize()
+#     aspect = img_h / img_w
+#     target_w = width - 2*margin
+#     target_h = target_w * aspect
+#     if target_h > height - 2*margin:
+#         target_h = height - 2*margin
+#         target_w = target_h / aspect
+#     c.drawImage(img, margin, height - margin - target_h, width=target_w, height=target_h)
 
-    c.save()
-    buf.seek(0)
-    return buf
+#     c.save()
+#     buf.seek(0)
+#     return buf
