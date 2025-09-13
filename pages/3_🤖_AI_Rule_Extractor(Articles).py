@@ -16,43 +16,53 @@ st.set_page_config(page_title="Dutch article rule extractor", layout="wide")
 
 st.title("🧠 Dutch article rule extractor — Decision Tree → readable rules")
 
-# --- 1. Cached Data Loading and Preparation ---
+# --- CACHE 1: Initial Data Loading & Processing ---
 @st.cache_data
 def get_and_prepare_data():
     """
-    Loads the initial dataset and performs basic feature engineering.
-    This function is cached to prevent reloading on every script rerun.
+    Loads and performs initial processing. Runs ONLY ONCE.
     """
     df_loaded = load_data_noun_embeddings()
     df_loaded.drop(['projection_x', 'projection_y', 'neighbors'], axis=1, inplace=True, errors="ignore")
-    # Note: add_basic_features is now called only once inside the cached function
     df_processed = add_basic_features(df_loaded, "lemma")
     return df_processed
 
-# --- Call the cached function to get the data ---
+# --- CACHE 2: Final Model Input Creation ---
+@st.cache_data
+def create_model_inputs(df, selected_features_tuple):
+    """
+    Performs one-hot encoding. Reruns ONLY if selected_features_tuple changes.
+    """
+    # --- THIS IS THE FIX ---
+    # Convert the incoming tuple back to a list for pandas column selection
+    selected_features_list = list(selected_features_tuple)
+    
+    X = pd.get_dummies(df[selected_features_list].astype(str), drop_first=True)
+    y = df["article"].astype(str)
+    return X, y
+
+# --- Load and Process Data using Cached Functions ---
 df = get_and_prepare_data()
 
 st.subheader("Preview of dataset (first 5 rows)")
 st.dataframe(df.head())
 
-# Define column names
-label_col, lemma_col = "article", "lemma"
-
-# --- 2. Feature Selection in Sidebar ---
+# --- Feature Selection (Sidebar) ---
 st.sidebar.subheader("Feature Selection")
-exclude = {label_col, lemma_col, "lemma_str"}
+exclude = {"article", "lemma", "lemma_str"}
 all_feature_cols = [c for c in df.columns if c not in exclude]
-selected_features = st.sidebar.multiselect("Select features", all_feature_cols, default=all_feature_cols)
+
+# We create a tuple so the selection is "hashable" and can be cached
+selected_features = tuple(st.sidebar.multiselect("Select features", all_feature_cols, default=all_feature_cols))
 
 if not selected_features:
     st.error("Please select at least one feature.")
     st.stop()
 
-# Perform one-hot encoding on the user-selected features
-X = pd.get_dummies(df[selected_features].astype(str), drop_first=True)
-y = df[label_col].astype(str)
+# Create model inputs using the second cached function
+X, y = create_model_inputs(df, selected_features)
 
-# --- 3. Model settings ---
+# --- Model Settings (Sidebar) ---
 st.sidebar.subheader("Model controls")
 max_depth = st.sidebar.selectbox("Tree depth", [2,3,4,5,6], index=2)
 min_samples_leaf = st.sidebar.slider("min_samples_leaf", 1, 50, 3)
@@ -61,8 +71,7 @@ test_size = st.sidebar.slider("Test set fraction (%)", 5, 50, 20) / 100.0
 
 fit_button = st.sidebar.button("🔄 Fit model", type="primary")
 
-# --- 4. Train & Evaluate ---
-# This part remains the same, but I've simplified the session_state storage slightly
+# --- Train & Evaluate ---
 if fit_button:
     with st.spinner("Training decision tree..."):
         X_train, X_test, y_train, y_test = train_test_split(
@@ -75,26 +84,23 @@ if fit_button:
         ).fit(X_train, y_train)
 
         cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=random_state)
-        # We can run CV on the full dataset to get a more robust estimate
         cv_scores = cross_val_score(clf, X, y, cv=cv, scoring="accuracy")
 
-        # Store results in session state for rendering
         st.session_state.clf_results = {
-            "clf": clf,
-            "X_test": X_test, "y_test": y_test,
-            "X": X, "y": y, # Pass full data for rule support calculation
-            "cv_scores": cv_scores,
+            "clf": clf, "X_test": X_test, "y_test": y_test,
+            "X": X, "y": y, "cv_scores": cv_scores,
         }
 
-# --- 5. Render results (if model exists) ---
+# --- Render Results ---
 if "clf_results" in st.session_state:
     results = st.session_state.clf_results
-    clf, X_test, y_test, X, y, cv_scores = (
-        results["clf"], results["X_test"], results["y_test"],
-        results["X"], results["y"], results["cv_scores"]
-    )
+    clf = results["clf"]
+    X_test = results["X_test"]
+    y_test = results["y_test"]
+    X_full = results["X"]
+    y_full = results["y"]
+    cv_scores = results["cv_scores"]
 
-    # ---- Evaluation ----
     st.subheader("Model evaluation")
     y_pred = clf.predict(X_test)
     acc = accuracy_score(y_test, y_pred)
@@ -119,51 +125,36 @@ if "clf_results" in st.session_state:
                 ax.text(j, i, conf_mat[i, j], ha="center", va="center", color=color)
         plt.tight_layout()
         st.pyplot(fig)
-        plt.close(fig) # Correctly close the confusion matrix figure
+        plt.close(fig)
 
-    # ---- Tree Visualization ----
     st.subheader("Decision tree visualization")
     fig2, ax2 = plt.subplots(figsize=(14, 6 + max_depth))
-    plot_tree(clf, feature_names=X.columns.tolist(), class_names=clf.classes_, filled=True, fontsize=8, ax=ax2)
+    plot_tree(clf, feature_names=X_full.columns.tolist(), class_names=clf.classes_, filled=True, fontsize=8, ax=ax2)
     st.pyplot(fig2)
-    plt.close(fig2) # Correctly close the tree figure
+    plt.close(fig2)
 
-    # ---- Rules Extraction ----
     st.subheader("Extracted rules")
-    df_rules = tree_rules_to_dataframe(clf, X.columns.tolist(), X, y, min_support=1)
-
+    df_rules = tree_rules_to_dataframe(clf, X_full.columns.tolist(), X_full, y_full, min_support=1)
+    
     if not df_rules.empty:
         counts_df = pd.json_normalize(df_rules['class_counts']).fillna(0).astype(int)
         rules_display = pd.concat([df_rules.drop(columns=['class_counts']), counts_df], axis=1)
         rules_display = make_rules_human(rules_display)
         merge_rules_df = merge_rules(rules_display)
-        
         st.dataframe(merge_rules_df)
 
-        # ---- Charts Section (Now Fixed) ----
         st.markdown("### Rule charts")
-        st.markdown("A good rule has high **Predicted accuracy** (green) and reasonable **Data coverage** (blue).")
-        
         for i, row in rules_display.head(8).iterrows():
-            st.markdown(f"**Rule #{i+1}**: Predicts **{row['predicted_class']}** ({row['predicted_pct']:.1%}) "
-                        f"with a data coverage of {row['support_pct']:.1%}")
-            
-            fig_r, axr = plt.subplots(figsize=(6, 1.2)) # Create the new figure 'fig_r'
-            
+            st.markdown(f"**Rule #{i+1}**: Predicts **{row['predicted_class']}**")
+            fig_r, axr = plt.subplots(figsize=(6, 1.2))
             vals = [row['predicted_pct'], row['support_pct']]
             labels = ["Predicted accuracy", "Data coverage"]
             colors = ["#4CAF50", "#2196F3"]
             bars = axr.barh(labels, vals, color=colors)
             for bar, val in zip(bars, vals):
-                axr.text(val, bar.get_y() + bar.get_height()/2, f" {val:.0%}", 
-                         va='center', ha='left', fontsize=9)
-
+                axr.text(val, bar.get_y() + bar.get_height()/2, f" {val:.0%}", va='center', ha='left', fontsize=9)
             axr.set_xlim(0, 1.05)
-            axr.spines['top'].set_visible(False)
-            axr.spines['right'].set_visible(False)
-            axr.spines['bottom'].set_visible(False)
-            axr.set_xticks([]) # Hide x-axis ticks
+            axr.set_xticks([])
             plt.tight_layout()
-            
             st.pyplot(fig_r)
-            plt.close(fig_r) # CORRECTLY close 'fig_r' to prevent memory leak
+            plt.close(fig_r)
