@@ -49,6 +49,16 @@ if not selected_features:
     st.error("Please select at least one feature.")
     st.stop()
 
+# Store current feature selection to detect changes
+if 'current_features' not in st.session_state:
+    st.session_state.current_features = selected_features.copy()
+else:
+    # If features changed, clear the model results
+    if set(st.session_state.current_features) != set(selected_features):
+        if 'clf_results' in st.session_state:
+            del st.session_state.clf_results
+        st.session_state.current_features = selected_features.copy()
+
 # --- 3. Model settings ---
 st.sidebar.subheader("Model controls")
 max_depth = st.sidebar.selectbox("Tree depth", [2,3,4,5,6], index=2)
@@ -56,7 +66,7 @@ min_samples_leaf = st.sidebar.slider("min_samples_leaf", 1, 50, 3)
 random_state = st.sidebar.number_input("random_state (seed)", 0, 99999, 42)
 test_size = st.sidebar.slider("Test set fraction (%)", 5, 50, 20) / 100.0
 
-fit_button = st.sidebar.button("🔄 Fit model", type="primary", width="stretch")
+fit_button = st.sidebar.button("🔄 Fit model", type="primary", use_container_width=True)
 
 # --- 4. Train & Evaluate ---
 if fit_button:
@@ -86,7 +96,7 @@ if fit_button:
             "cv_scores": cv_scores,
             "feature_names": X.columns.tolist(),
             "class_names": clf.classes_,
-            "selected_features": selected_features
+            "selected_features": selected_features.copy()  # Store a copy
         }
         
         # Clear large objects to free memory
@@ -94,107 +104,114 @@ if fit_button:
         import gc
         gc.collect()
 
-# --- 5. Render results (if model exists) ---
+# --- 5. Render results (if model exists and features match) ---
 if "clf_results" in st.session_state:
     results = st.session_state.clf_results
-    clf, X_test, y_test, cv_scores = (
-        results["clf"], results["X_test"], results["y_test"], results["cv_scores"]
-    )
-    feature_names = results["feature_names"]
-    class_names = results["class_names"]
-    selected_features = results["selected_features"]
-
-    # ---- Evaluation ----
-    st.subheader("Model evaluation")
-    y_pred = clf.predict(X_test)
-    acc = accuracy_score(y_test, y_pred)
-    report = classification_report(y_test, y_pred, output_dict=True)
-    conf_mat = confusion_matrix(y_test, y_pred, labels=class_names)
-
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.metric("Test accuracy", f"{acc:.3f}")
-        st.write(f"5-fold CV mean accuracy: **{cv_scores.mean():.3f}** (± {cv_scores.std():.3f})")
-        st.dataframe(pd.DataFrame(report).T.style.format("{:.2f}"))
-    with col2:
-        fig, ax = plt.subplots(figsize=(4, 3))
-        ax.imshow(conf_mat, interpolation='nearest', cmap=plt.cm.Blues)
-        ax.set_xticks(np.arange(len(class_names)))
-        ax.set_yticks(np.arange(len(class_names)))
-        ax.set_xticklabels(class_names, rotation=45, ha="right")
-        ax.set_yticklabels(class_names)
-        for i in range(len(class_names)):
-            for j in range(len(class_names)):
-                color = "white" if conf_mat[i, j] > conf_mat.max() / 2. else "black"
-                ax.text(j, i, conf_mat[i, j], ha="center", va="center", color=color)
-        plt.tight_layout()
-        st.pyplot(fig, clear_figure=True)  # Clear figure after rendering
-        plt.close(fig)
-
-    # ---- Tree Visualization ----
-    st.subheader("Decision tree visualization")
-    # Only show tree if depth is not too large
-    if max_depth <= 5:
-        fig2, ax2 = plt.subplots(figsize=(14, 6 + max_depth))
-        plot_tree(clf, feature_names=feature_names, class_names=class_names, 
-                 filled=True, fontsize=8, ax=ax2)
-        st.pyplot(fig2, clear_figure=True)
-        plt.close(fig2)
-    else:
-        st.warning("Tree visualization is disabled for depths > 5 to save memory.")
-
-    # ---- Rules Extraction ----
-    st.subheader("Extracted rules")
     
-    # Recreate X for rule extraction but with optimized memory usage
-    with st.spinner("Extracting rules..."):
-        X_rules = pd.get_dummies(df[selected_features].astype(str), drop_first=True)
-        y_rules = df[label_col].astype(str)
-        
-        df_rules = tree_rules_to_dataframe(clf, feature_names, X_rules, y_rules, min_support=1)
-        
-        # Free memory after rule extraction
-        del X_rules, y_rules
-        import gc
-        gc.collect()
+    # Check if the model was trained with the same features as currently selected
+    if set(results["selected_features"]) != set(selected_features):
+        st.warning("Feature selection has changed. Please retrain the model with the new features.")
+        if 'clf_results' in st.session_state:
+            del st.session_state.clf_results
+    else:
+        clf, X_test, y_test, cv_scores = (
+            results["clf"], results["X_test"], results["y_test"], results["cv_scores"]
+        )
+        feature_names = results["feature_names"]
+        class_names = results["class_names"]
+        selected_features = results["selected_features"]
 
-    if not df_rules.empty:
-        counts_df = pd.json_normalize(df_rules['class_counts']).fillna(0).astype(int)
-        rules_display = pd.concat([df_rules.drop(columns=['class_counts']), counts_df], axis=1)
-        rules_display = make_rules_human(rules_display)
-        merge_rules_df = merge_rules(rules_display)
-        
-        st.dataframe(merge_rules_df)
+        # ---- Evaluation ----
+        st.subheader("Model evaluation")
+        y_pred = clf.predict(X_test)
+        acc = accuracy_score(y_test, y_pred)
+        report = classification_report(y_test, y_pred, output_dict=True)
+        conf_mat = confusion_matrix(y_test, y_pred, labels=class_names)
 
-        # ---- Charts Section ----
-        st.markdown("### Rule charts")
-        st.markdown("A good rule has high **Predicted accuracy** (green) and reasonable **Data coverage** (blue).")
-        
-        # Limit the number of rules shown to save memory
-        max_rules_to_show = 5
-        for i, row in rules_display.head(max_rules_to_show).iterrows():
-            st.markdown(f"**Rule #{i+1}**: Predicts **{row['predicted_class']}** ({row['predicted_pct']:.1%}) "
-                        f"with a data coverage of {row['support_pct']:.1%}")
-            
-            fig_r, axr = plt.subplots(figsize=(6, 1.2))
-            
-            vals = [row['predicted_pct'], row['support_pct']]
-            labels = ["Predicted accuracy", "Data coverage"]
-            colors = ["#4CAF50", "#2196F3"]
-            bars = axr.barh(labels, vals, color=colors)
-            for bar, val in zip(bars, vals):
-                axr.text(val, bar.get_y() + bar.get_height()/2, f" {val:.0%}", 
-                         va='center', ha='left', fontsize=9)
-
-            axr.set_xlim(0, 1.05)
-            axr.spines['top'].set_visible(False)
-            axr.spines['right'].set_visible(False)
-            axr.spines['bottom'].set_visible(False)
-            axr.set_xticks([])
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            st.metric("Test accuracy", f"{acc:.3f}")
+            st.write(f"5-fold CV mean accuracy: **{cv_scores.mean():.3f}** (± {cv_scores.std():.3f})")
+            st.dataframe(pd.DataFrame(report).T.style.format("{:.2f}"))
+        with col2:
+            fig, ax = plt.subplots(figsize=(4, 3))
+            ax.imshow(conf_mat, interpolation='nearest', cmap=plt.cm.Blues)
+            ax.set_xticks(np.arange(len(class_names)))
+            ax.set_yticks(np.arange(len(class_names)))
+            ax.set_xticklabels(class_names, rotation=45, ha="right")
+            ax.set_yticklabels(class_names)
+            for i in range(len(class_names)):
+                for j in range(len(class_names)):
+                    color = "white" if conf_mat[i, j] > conf_mat.max() / 2. else "black"
+                    ax.text(j, i, conf_mat[i, j], ha="center", va="center", color=color)
             plt.tight_layout()
+            st.pyplot(fig, clear_figure=True)  # Clear figure after rendering
+            plt.close(fig)
+
+        # ---- Tree Visualization ----
+        st.subheader("Decision tree visualization")
+        # Only show tree if depth is not too large
+        if max_depth <= 5:
+            fig2, ax2 = plt.subplots(figsize=(14, 6 + max_depth))
+            plot_tree(clf, feature_names=feature_names, class_names=class_names, 
+                     filled=True, fontsize=8, ax=ax2)
+            st.pyplot(fig2, clear_figure=True)
+            plt.close(fig2)
+        else:
+            st.warning("Tree visualization is disabled for depths > 5 to save memory.")
+
+        # ---- Rules Extraction ----
+        st.subheader("Extracted rules")
+        
+        # Recreate X for rule extraction but with optimized memory usage
+        with st.spinner("Extracting rules..."):
+            X_rules = pd.get_dummies(df[selected_features].astype(str), drop_first=True)
+            y_rules = df[label_col].astype(str)
             
-            st.pyplot(fig_r, clear_figure=True)
-            plt.close(fig_r)
+            df_rules = tree_rules_to_dataframe(clf, feature_names, X_rules, y_rules, min_support=1)
             
-        if len(rules_display) > max_rules_to_show:
-            st.info(f"Showing first {max_rules_to_show} rules. Total rules: {len(rules_display)}")
+            # Free memory after rule extraction
+            del X_rules, y_rules
+            import gc
+            gc.collect()
+
+        if not df_rules.empty:
+            counts_df = pd.json_normalize(df_rules['class_counts']).fillna(0).astype(int)
+            rules_display = pd.concat([df_rules.drop(columns=['class_counts']), counts_df], axis=1)
+            rules_display = make_rules_human(rules_display)
+            merge_rules_df = merge_rules(rules_display)
+            
+            st.dataframe(merge_rules_df)
+
+            # ---- Charts Section ----
+            st.markdown("### Rule charts")
+            st.markdown("A good rule has high **Predicted accuracy** (green) and reasonable **Data coverage** (blue).")
+            
+            # Limit the number of rules shown to save memory
+            max_rules_to_show = 5
+            for i, row in rules_display.head(max_rules_to_show).iterrows():
+                st.markdown(f"**Rule #{i+1}**: Predicts **{row['predicted_class']}** ({row['predicted_pct']:.1%}) "
+                            f"with a data coverage of {row['support_pct']:.1%}")
+                
+                fig_r, axr = plt.subplots(figsize=(6, 1.2))
+                
+                vals = [row['predicted_pct'], row['support_pct']]
+                labels = ["Predicted accuracy", "Data coverage"]
+                colors = ["#4CAF50", "#2196F3"]
+                bars = axr.barh(labels, vals, color=colors)
+                for bar, val in zip(bars, vals):
+                    axr.text(val, bar.get_y() + bar.get_height()/2, f" {val:.0%}", 
+                             va='center', ha='left', fontsize=9)
+
+                axr.set_xlim(0, 1.05)
+                axr.spines['top'].set_visible(False)
+                axr.spines['right'].set_visible(False)
+                axr.spines['bottom'].set_visible(False)
+                axr.set_xticks([])
+                plt.tight_layout()
+                
+                st.pyplot(fig_r, clear_figure=True)
+                plt.close(fig_r)
+                
+            if len(rules_display) > max_rules_to_show:
+                st.info(f"Showing first {max_rules_to_show} rules. Total rules: {len(rules_display)}")
